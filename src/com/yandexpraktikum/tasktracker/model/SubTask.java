@@ -1,11 +1,13 @@
+package com.yandexpraktikum.tasktracker.model;
+
 public class SubTask extends Task{
 
     private int epicId;
 
-    public SubTask(String name, String description, int id, int epicId) {
-        super(name, description, id);
+    public SubTask(String name, String description, String status, int epicId) {
+        super(name, description, status);
         this.epicId = epicId;
-        status = "NEW";
+        this.id = 0;
     }
 
     public int getEpicId() {
