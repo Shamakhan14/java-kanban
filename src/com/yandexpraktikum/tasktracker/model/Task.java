@@ -10,7 +10,6 @@ public class Task {
     public Task(String name, String description, String status) {
         this.name = name;
         this.description = description;
-        this.id = 0;
         this.status = status;
     }
 

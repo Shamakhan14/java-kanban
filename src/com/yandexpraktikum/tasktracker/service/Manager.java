@@ -35,37 +35,25 @@ public class Manager {
             Epic newEpic = epics.get(subTask.getEpicId()); //забрали эпик из мапа
             ArrayList<Integer> newSubTaskIds = newEpic.getSubTaskIds(); //забрали лист с сабами из эпика
             newSubTaskIds.add(subTask.getId()); //добавили в лист ид саба
-            newEpic.setSubTaskIds(newSubTaskIds); //положили обратно лист
             subTasks.put(subTask.getId(), subTask); //положили саб в мапу
-            newEpic = updateEpicStatus(newEpic);
-            epics.put(newEpic.getId(), newEpic); //положили обратно эпик
-            //где-то здесь же лежит анекдот про дамочку с сумочкой
+            updateEpicStatus(newEpic);
         } else {
             System.out.println("Такого эпика нет.");
         }
     }
 
     public ArrayList<Task> getTasks() { //вывод списка задач
-        ArrayList<Task> newTasks = new ArrayList<>();
-        for (Task task: tasks.values()) {
-            newTasks.add(task);
-        }
+        ArrayList<Task> newTasks = new ArrayList<>(tasks.values());;
         return newTasks;
     }
 
     public ArrayList<Epic> getEpics() { //вывод списка эпиков
-        ArrayList<Epic> newEpics = new ArrayList<>();
-        for (Epic epic: epics.values()) {
-            newEpics.add(epic);
-        }
+        ArrayList<Epic> newEpics = new ArrayList<>(epics.values());
         return newEpics;
     }
 
     public ArrayList<SubTask> getSubTasks() { //вывод списка подзадач
-        ArrayList<SubTask> newSubTasks = new ArrayList<>();
-        for (SubTask subTask: subTasks.values()) {
-            newSubTasks.add(subTask);
-        }
+        ArrayList<SubTask> newSubTasks = new ArrayList<>(subTasks.values());
         return newSubTasks;
     }
 
@@ -83,8 +71,7 @@ public class Manager {
     public void clearAllSubtasks() { //удалить все подзадачи
         subTasks.clear();
         for (Epic epic: epics.values()) {
-            ArrayList<Integer> newSubTaskIds = new ArrayList<>();
-            epic.setSubTaskIds(newSubTaskIds);
+            epic.getSubTaskIds().clear();
             epic.setStatus("NEW");
         }
         System.out.println("Все подзадачи удалены.");
@@ -139,13 +126,11 @@ public class Manager {
 
     public void removeSubtaskById(int id) {
         if (subTasks.containsKey(id)) {
-            SubTask newSubTask = subTasks.get(id); //вытаскиваем саб
-            Epic newEpic = epics.get(newSubTask.getEpicId()); //вытаскиваем эпик по сабу
-            ArrayList<Integer> newSubTaskIds = newEpic.getSubTaskIds(); //вытаскиваем список сабов эпика
-            newSubTaskIds.remove(newSubTask.getId()); //удаляем ид саба
-            newEpic.setSubTaskIds(newSubTaskIds); //обновляем список сабов
-            newEpic = updateEpicStatus(newEpic);
-            epics.put(newEpic.getId(), newEpic); //кладем эпик обратно
+            SubTask newSubTask = subTasks.get(id);
+            Epic newEpic = epics.get(newSubTask.getEpicId());
+            ArrayList<Integer> newSubTaskIds = newEpic.getSubTaskIds();
+            newSubTaskIds.remove((Integer) newSubTask.getId());
+            updateEpicStatus(newEpic);
             subTasks.remove(id);
         } else {
             System.out.println("Такой подзадачи нет.");
@@ -174,8 +159,7 @@ public class Manager {
         if (subTasks.containsKey(subTask.getId())) {
             subTasks.put(subTask.getId(), subTask);
             Epic epic = epics.get(subTask.getEpicId());
-            epic = updateEpicStatus(epic);
-            epics.put(epic.getId(), epic);
+            updateEpicStatus(epic);
         } else {
             System.out.println("Искомая подзадача отсутствует.");
         }
@@ -189,11 +173,10 @@ public class Manager {
         }
     }
 
-    private Epic updateEpicStatus(Epic epic) {
+    private void updateEpicStatus(Epic epic) {
         ArrayList<Integer> newSubTaskIds = epic.getSubTaskIds();
         if (newSubTaskIds.isEmpty()) {
             epic.setStatus("NEW");
-            return epic;
         }
         boolean isNew = true;
         boolean isDone = true;
@@ -208,13 +191,10 @@ public class Manager {
         }
         if (isNew) {
             epic.setStatus("NEW");
-            return epic;
         } else if (isDone) {
             epic.setStatus("DONE");
-            return epic;
         } else {
             epic.setStatus("IN_PROGRESS");
-            return epic;
         }
     }
 }
