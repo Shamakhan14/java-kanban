@@ -4,6 +4,8 @@ import com.yandexpraktikum.tasktracker.model.Epic;
 import com.yandexpraktikum.tasktracker.model.SubTask;
 import com.yandexpraktikum.tasktracker.model.Task;
 import com.yandexpraktikum.tasktracker.util.Counter;
+import com.yandexpraktikum.tasktracker.util.Status;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -207,10 +209,10 @@ public class InMemoryTaskManager implements TaskManager {
         boolean isDone = true;
         for (Integer id: newSubTaskIds) {
             SubTask newSubTask = subTasks.get(id);
-            if (!newSubTask.getStatus().equals("NEW")) {
+            if (!newSubTask.getStatus().equals(Status.NEW)) {
                 isNew = false;
             }
-            if (!newSubTask.getStatus().equals("DONE")) {
+            if (!newSubTask.getStatus().equals(Status.DONE)) {
                 isDone = false;
             }
         }
