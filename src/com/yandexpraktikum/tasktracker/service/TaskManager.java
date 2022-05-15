@@ -3,6 +3,7 @@ package com.yandexpraktikum.tasktracker.service;
 import com.yandexpraktikum.tasktracker.model.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
 
@@ -32,5 +33,5 @@ public interface TaskManager {
     void updateSubTask(SubTask subTask);
     void updateEpic(Epic epic);
 
-
+    List<Task> getHistory();
 }

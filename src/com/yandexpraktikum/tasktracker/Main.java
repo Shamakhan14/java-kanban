@@ -41,5 +41,12 @@ public class Main {
         System.out.println(inMemoryTaskManager.getTasks());
         System.out.println(inMemoryTaskManager.getEpics());
         System.out.println(inMemoryTaskManager.getSubTasks());
+
+        System.out.println(inMemoryTaskManager.getSubtaskById(subTask1.getId()));
+        System.out.println(inMemoryTaskManager.getEpicById(epic1.getId()));
+        System.out.println(inMemoryTaskManager.getSubtaskById(subTask1.getId()));
+        System.out.println(inMemoryTaskManager.getSubtaskById(subTask2.getId()));
+        System.out.println("История:");
+        System.out.println(inMemoryTaskManager.getHistory());
     }
 }

@@ -5,6 +5,7 @@ import com.yandexpraktikum.tasktracker.model.SubTask;
 import com.yandexpraktikum.tasktracker.model.Task;
 import com.yandexpraktikum.tasktracker.util.Counter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -12,11 +13,13 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer,Task> tasks;
     private HashMap<Integer,Epic> epics;
     private HashMap<Integer,SubTask> subTasks;
+    private List<Task> history;
 
     public InMemoryTaskManager() {
         this.tasks = new HashMap<>();
         this.epics= new HashMap<>();
         this.subTasks = new HashMap<>();
+        this.history = new ArrayList<>();
     }
 
     @Override
@@ -89,6 +92,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         if (tasks.containsKey(id)) {
+            addTaskToHistory(tasks.get(id));
             return tasks.get(id);
         } else {
             System.out.println("Такой задачи нет.");
@@ -99,6 +103,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         if (epics.containsKey(id)) {
+            addTaskToHistory(epics.get(id));
             return epics.get(id);
         } else {
             System.out.println("Такого эпика нет.");
@@ -109,6 +114,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public SubTask getSubtaskById(int id) {
         if (subTasks.containsKey(id)) {
+            addTaskToHistory(subTasks.get(id));
             return subTasks.get(id);
         } else {
             System.out.println("Такой подзадачи нет.");
@@ -214,6 +220,20 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus("DONE");
         } else {
             epic.setStatus("IN_PROGRESS");
+        }
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return history;
+    }
+
+    private void addTaskToHistory(Task task) {
+        if (history.size() < 10) {
+            history.add(task);
+        } else {
+            history.remove(0);
+            history.add(task);
         }
     }
 }
