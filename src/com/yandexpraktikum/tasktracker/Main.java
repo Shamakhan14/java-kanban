@@ -47,6 +47,6 @@ public class Main {
         System.out.println(inMemoryTaskManager.getSubtaskById(subTask1.getId()));
         System.out.println(inMemoryTaskManager.getSubtaskById(subTask2.getId()));
         System.out.println("История:");
-        System.out.println(inMemoryTaskManager.getHistory());
+        System.out.println(inMemoryTaskManager.inMemoryHistoryManager.getHistory());
     }
 }
