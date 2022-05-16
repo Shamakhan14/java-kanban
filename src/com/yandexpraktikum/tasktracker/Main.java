@@ -1,13 +1,14 @@
 package com.yandexpraktikum.tasktracker;
 
 import com.yandexpraktikum.tasktracker.model.*;
-import com.yandexpraktikum.tasktracker.service.InMemoryTaskManager;
+import com.yandexpraktikum.tasktracker.service.TaskManager;
+import com.yandexpraktikum.tasktracker.util.Managers;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+        TaskManager inMemoryTaskManager = Managers.getDefault();
 
         Epic epic1 = new Epic("Помыть посуду", "Взять губку и помыть посуду");
         inMemoryTaskManager.addEpic(epic1);
@@ -47,6 +48,6 @@ public class Main {
         System.out.println(inMemoryTaskManager.getSubtaskById(subTask1.getId()));
         System.out.println(inMemoryTaskManager.getSubtaskById(subTask2.getId()));
         System.out.println("История:");
-        System.out.println(inMemoryTaskManager.inMemoryHistoryManager.getHistory());
+        System.out.println(inMemoryTaskManager.getHistory());
     }
 }

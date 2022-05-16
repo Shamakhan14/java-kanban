@@ -4,17 +4,19 @@ import com.yandexpraktikum.tasktracker.model.Epic;
 import com.yandexpraktikum.tasktracker.model.SubTask;
 import com.yandexpraktikum.tasktracker.model.Task;
 import com.yandexpraktikum.tasktracker.util.Counter;
+import com.yandexpraktikum.tasktracker.util.Managers;
 import com.yandexpraktikum.tasktracker.util.Status;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
     private HashMap<Integer,Task> tasks;
     private HashMap<Integer,Epic> epics;
     private HashMap<Integer,SubTask> subTasks;
-    public InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
+    public HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     public InMemoryTaskManager() {
         this.tasks = new HashMap<>();
@@ -221,5 +223,10 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setStatus("IN_PROGRESS");
         }
+    }
+
+    @Override
+    public List<Task> getHistory() {
+        return inMemoryHistoryManager.getHistory();
     }
 }
