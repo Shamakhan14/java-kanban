@@ -70,19 +70,31 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearAllTasks() { //удалить все задачи
+        for (Integer id: tasks.keySet()) {
+            inMemoryHistoryManager.remove(id);
+        }
         tasks.clear();
         System.out.println("Все задачи удалены.");
     }
 
     @Override
     public void clearAllEpics() { //удалить все эпики
+        for (Integer id: epics.keySet()) {
+            inMemoryHistoryManager.remove(id);
+        }
         epics.clear();
+        for (Integer id: subTasks.keySet()) {
+            inMemoryHistoryManager.remove(id);
+        }
         subTasks.clear();
         System.out.println("Все эпики и подзадачи удалены.");
     }
 
     @Override
     public void clearAllSubtasks() { //удалить все подзадачи
+        for (Integer id: subTasks.keySet()) {
+            inMemoryHistoryManager.remove(id);
+        }
         subTasks.clear();
         for (Epic epic: epics.values()) {
             epic.getSubTaskIds().clear();
@@ -127,6 +139,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeTaskById(int id) {  //удаление задачи по ИД
         if (tasks.containsKey(id)) {
+            inMemoryHistoryManager.remove(id);
             tasks.remove(id);
         } else {
             System.out.println("Такой задачи нет.");
@@ -138,8 +151,10 @@ public class InMemoryTaskManager implements TaskManager {
         if (epics.containsKey(id)) {
             Epic newEpic = epics.get(id);
             for (Integer newId: newEpic.getSubTaskIds()) {
+                inMemoryHistoryManager.remove(newId);
                 subTasks.remove(newId);
             }
+            inMemoryHistoryManager.remove(id);
             epics.remove(id);
         } else {
             System.out.println("Такого эпика нет.");
@@ -154,6 +169,7 @@ public class InMemoryTaskManager implements TaskManager {
             ArrayList<Integer> newSubTaskIds = newEpic.getSubTaskIds();
             newSubTaskIds.remove((Integer) newSubTask.getId());
             updateEpicStatus(newEpic);
+            inMemoryHistoryManager.remove(id);
             subTasks.remove(id);
         } else {
             System.out.println("Такой подзадачи нет.");
