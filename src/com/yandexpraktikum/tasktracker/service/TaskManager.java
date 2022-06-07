@@ -2,7 +2,6 @@ package com.yandexpraktikum.tasktracker.service;
 
 import com.yandexpraktikum.tasktracker.model.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
@@ -11,9 +10,9 @@ public interface TaskManager {
     void addEpic (Epic epic);
     void addSubTask (SubTask subTask);
 
-    ArrayList<Task> getTasks();
-    ArrayList<Epic> getEpics();
-    ArrayList<SubTask> getSubTasks();
+    List<Task> getTasks();
+    List<Epic> getEpics();
+    List<SubTask> getSubTasks();
 
     void clearAllTasks();
     void clearAllEpics();
@@ -27,7 +26,7 @@ public interface TaskManager {
     void removeEpicById(int id);
     void removeSubtaskById(int id);
 
-    ArrayList<SubTask> getSubtasksByEpicId(int id);
+    List<SubTask> getSubtasksByEpicId(int id);
 
     void updateTask(Task task);
     void updateSubTask(SubTask subTask);

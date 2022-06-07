@@ -1,14 +1,23 @@
 package com.yandexpraktikum.tasktracker.service;
 
 import com.yandexpraktikum.tasktracker.model.Task;
-
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private HashMap<Integer, Node> historyTable;
+    public static class Node {
+        public Task data;
+        public Node next;
+        public Node prev;
 
-    class CustomLinkedList {
+        public Node(Node prev, Task data, Node next) {
+            this.data = data;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+
+    private static class CustomLinkedList {
 
         private Node head;
         private Node tail;
@@ -26,8 +35,8 @@ public class InMemoryHistoryManager implements HistoryManager {
             size++;
         }
 
-        public ArrayList<Task> getTasks(){
-            ArrayList<Task> result = new ArrayList<>(size);
+        public List<Task> getTasks(){
+            List<Task> result = new ArrayList<>(size);
             for(Node temp = head;temp!=null;temp = temp.next){
                 result.add(temp.data);
             }
@@ -58,6 +67,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
+    private Map<Integer, Node> historyTable;
     private CustomLinkedList history;
 
     public InMemoryHistoryManager() {
@@ -74,7 +84,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public ArrayList<Task> getHistory() {
-        return new ArrayList<>(history.getTasks());
+        return (ArrayList) (history.getTasks());
     }
 
     @Override

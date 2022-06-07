@@ -1,17 +1,18 @@
 package com.yandexpraktikum.tasktracker.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Epic extends Task{
 
-    private ArrayList<Integer> subTaskIds;
+    private List<Integer> subTaskIds;
 
     public Epic(String name, String description) {
         super(name, description, "NEW");
         this.subTaskIds = new ArrayList<>();
     }
 
-    public ArrayList<Integer> getSubTaskIds() {
+    public List<Integer> getSubTaskIds() {
         return subTaskIds;
     }
 
