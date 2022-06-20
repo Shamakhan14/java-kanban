@@ -5,7 +5,7 @@ import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    public static class Node {
+    private static class Node {
         public Task data;
         public Node next;
         public Node prev;
@@ -83,8 +83,8 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
-        return (ArrayList) (history.getTasks());
+    public List<Task> getHistory() {
+        return history.getTasks();
     }
 
     @Override
