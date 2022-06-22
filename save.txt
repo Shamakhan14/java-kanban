@@ -1,0 +1,8 @@
+id,type,name,status,description,epic
+2,TASK,Посуда,IN_PROGRESS,Помыть посуду,
+7,EPIC,Ужин,IN_PROGRESS,Покушать,
+8,SUBTASK,Приготовить,IN_PROGRESS,Приготовить,7,
+
+2,
+8
+

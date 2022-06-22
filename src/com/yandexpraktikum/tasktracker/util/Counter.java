@@ -8,4 +8,12 @@ public class Counter {
         id++;
         return id;
     }
+
+    public static int getCurrentId() {
+        return id;
+    }
+
+    public static void setId(int newId) {
+        id = newId;
+    }
 }

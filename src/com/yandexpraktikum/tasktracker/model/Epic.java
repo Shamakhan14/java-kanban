@@ -1,11 +1,14 @@
 package com.yandexpraktikum.tasktracker.model;
 
+import com.yandexpraktikum.tasktracker.util.TaskType;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task{
 
     private List<Integer> subTaskIds;
+    private TaskType taskType = TaskType.EPIC;
 
     public Epic(String name, String description) {
         super(name, description, "NEW");
@@ -22,12 +25,6 @@ public class Epic extends Task{
 
     @Override
     public String toString() {
-        return "Epic{" +
-                "subTaskIds=" + subTaskIds +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status='" + status + '\'' +
-                ", id=" + id +
-                '}';
+        return id + "," + taskType.name() + "," + name + "," + status + "," + description + ",";
     }
 }

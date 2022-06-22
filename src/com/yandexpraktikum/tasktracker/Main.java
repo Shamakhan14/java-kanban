@@ -1,21 +1,23 @@
 package com.yandexpraktikum.tasktracker;
 
 import com.yandexpraktikum.tasktracker.model.*;
+import com.yandexpraktikum.tasktracker.service.FileBackedTasksManager;
 import com.yandexpraktikum.tasktracker.service.TaskManager;
-import com.yandexpraktikum.tasktracker.util.Managers;
+
+import java.io.File;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager inMemoryTaskManager = Managers.getDefault();
+        TaskManager inMemoryTaskManager = new FileBackedTasksManager();
 
         //Заполнение и вывод
         Task task1 = new Task("Уборка", "Убраться в комнате", "NEW");
         inMemoryTaskManager.addTask(task1);
         Task task2 = new Task("Посуда", "Помыть посуду", "IN_PROGRESS");
         inMemoryTaskManager.addTask(task2);
-        Epic epic1 = new Epic("Java", "Посаниматься Java");
+        Epic epic1 = new Epic("Java", "Позаниматься Java");
         inMemoryTaskManager.addEpic(epic1);
         SubTask subTask1 = new SubTask("Теория", "Теория", "IN_PROGRESS", epic1.getId());
         inMemoryTaskManager.addSubTask(subTask1);
@@ -25,6 +27,8 @@ public class Main {
         inMemoryTaskManager.addSubTask(subTask3);
         Epic epic2 = new Epic("Ужин", "Покушать");
         inMemoryTaskManager.addEpic(epic2);
+        SubTask subTask4 = new SubTask("Приготовить", "Приготовить", "IN_PROGRESS", epic2.getId());
+        inMemoryTaskManager.addSubTask(subTask4);
         System.out.println(inMemoryTaskManager.getTasks());
         System.out.println(inMemoryTaskManager.getEpics());
         System.out.println(inMemoryTaskManager.getSubTasks());
@@ -43,5 +47,10 @@ public class Main {
         System.out.println("Удаление эпика и вывод");
         inMemoryTaskManager.removeEpicById(epic1.getId());
         System.out.println(inMemoryTaskManager.getHistory());
+
+        System.out.println("Чтение файла.");
+        File file = new File("save.txt");
+        FileBackedTasksManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(file);
+        FileBackedTasksManager.print(fileBackedTasksManager);
     }
 }

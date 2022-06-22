@@ -1,12 +1,14 @@
 package com.yandexpraktikum.tasktracker.model;
 
 import com.yandexpraktikum.tasktracker.util.Status;
+import com.yandexpraktikum.tasktracker.util.TaskType;
 
 public class Task {
 
     protected String name;
     protected String description;
     protected Status status;
+    protected TaskType taskType = TaskType.TASK;
     protected int id;
 
     public Task(String name, String description, String status) {
@@ -47,13 +49,12 @@ public class Task {
         this.description = description;
     }
 
+    public String getTaskType() {
+        return taskType.name();
+    }
+
     @Override
     public String toString() {
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status='" + status + '\'' +
-                ", id=" + id +
-                '}';
+        return id + "," + taskType.name() + "," + name + "," + status + "," + description + ",";
     }
 }
