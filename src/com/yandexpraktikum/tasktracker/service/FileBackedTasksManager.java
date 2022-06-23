@@ -271,10 +271,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println(inMemoryTaskManager.getTaskById(task1.getId()));
         System.out.println(inMemoryTaskManager.getHistory());
 
-        System.out.println("Удаление задачи и вывод");
-        inMemoryTaskManager.removeTaskById(task1.getId());
-        System.out.println(inMemoryTaskManager.getHistory());
-
         System.out.println("Удаление эпика и вывод");
         inMemoryTaskManager.removeEpicById(epic1.getId());
         System.out.println(inMemoryTaskManager.getHistory());
