@@ -2,18 +2,22 @@ package com.yandexpraktikum.tasktracker.util;
 
 public class Counter {
 
-    private static int id = 0;
+    private int id;
 
-    public static int getNewId() {
+    public Counter() {
+        this.id = 0;
+    }
+
+    public int getNewId() {
         id++;
         return id;
     }
 
-    public static int getCurrentId() {
+    public int getCurrentId() {
         return id;
     }
 
-    public static void setId(int newId) {
+    public void setId(int newId) {
         id = newId;
     }
 }

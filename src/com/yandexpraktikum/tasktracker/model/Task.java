@@ -8,7 +8,6 @@ public class Task {
     protected String name;
     protected String description;
     protected Status status;
-    protected TaskType taskType = TaskType.TASK;
     protected int id;
 
     public Task(String name, String description, String status) {
@@ -49,12 +48,12 @@ public class Task {
         this.description = description;
     }
 
-    public String getTaskType() {
-        return taskType.name();
+    public TaskType getTaskType() {
+        return TaskType.TASK;
     }
 
     @Override
     public String toString() {
-        return id + "," + taskType.name() + "," + name + "," + status + "," + description + ",";
+        return id + "," + getTaskType().name() + "," + name + "," + status + "," + description + ",";
     }
 }

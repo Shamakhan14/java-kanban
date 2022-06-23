@@ -8,7 +8,6 @@ import java.util.List;
 public class Epic extends Task{
 
     private List<Integer> subTaskIds;
-    private TaskType taskType = TaskType.EPIC;
 
     public Epic(String name, String description) {
         super(name, description, "NEW");
@@ -24,7 +23,12 @@ public class Epic extends Task{
     }
 
     @Override
+    public TaskType getTaskType() {
+        return TaskType.EPIC;
+    }
+
+    @Override
     public String toString() {
-        return id + "," + taskType.name() + "," + name + "," + status + "," + description + ",";
+        return id + "," + getTaskType().name() + "," + name + "," + status + "," + description + ",";
     }
 }

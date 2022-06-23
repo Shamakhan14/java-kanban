@@ -18,29 +18,31 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer,Epic> epics;
     protected Map<Integer,SubTask> subTasks;
     protected HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+    protected Counter counter;
 
     public InMemoryTaskManager() {
         this.tasks = new HashMap<>();
         this.epics= new HashMap<>();
         this.subTasks = new HashMap<>();
+        this.counter = new Counter();
     }
 
     @Override
     public void addTask (Task task) { //добавить задачу
-        task.setId(Counter.getNewId());
+        task.setId(counter.getNewId());
         tasks.put(task.getId(), task);
     }
 
     @Override
     public void addEpic (Epic epic) { //добавить эпик
-        epic.setId(Counter.getNewId());
+        epic.setId(counter.getNewId());
         epics.put(epic.getId(), epic);
     }
 
     @Override
     public void addSubTask (SubTask subTask) { //добавить подзадачу
         if (epics.containsKey(subTask.getEpicId())) {
-            subTask.setId(Counter.getNewId()); //присвоили ид
+            subTask.setId(counter.getNewId()); //присвоили ид
             Epic newEpic = epics.get(subTask.getEpicId()); //забрали эпик из мапа
             List<Integer> newSubTaskIds = newEpic.getSubTaskIds(); //забрали лист с сабами из эпика
             newSubTaskIds.add(subTask.getId()); //добавили в лист ид саба
@@ -53,20 +55,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getTasks() { //вывод списка задач
-        List<Task> newTasks = new ArrayList<>(tasks.values());
-        return newTasks;
+        return new ArrayList<>(tasks.values());
     }
 
     @Override
     public List<Epic> getEpics() { //вывод списка эпиков
-        List<Epic> newEpics = new ArrayList<>(epics.values());
-        return newEpics;
+        return new ArrayList<>(epics.values());
     }
 
     @Override
     public List<SubTask> getSubTasks() { //вывод списка подзадач
-        List<SubTask> newSubTasks = new ArrayList<>(subTasks.values());
-        return newSubTasks;
+        return new ArrayList<>(subTasks.values());
     }
 
     @Override

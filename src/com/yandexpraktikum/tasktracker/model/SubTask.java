@@ -5,7 +5,6 @@ import com.yandexpraktikum.tasktracker.util.TaskType;
 public class SubTask extends Task{
 
     private int epicId;
-    private TaskType taskType = TaskType.SUBTASK;
 
     public SubTask(String name, String description, String status, int epicId) {
         super(name, description, status);
@@ -17,7 +16,12 @@ public class SubTask extends Task{
     }
 
     @Override
+    public TaskType getTaskType() {
+        return TaskType.SUBTASK;
+    }
+
+    @Override
     public String toString() {
-        return id + "," + taskType.name() + "," + name + "," + status + "," + description + "," + epicId + ",";
+        return id + "," + getTaskType().name() + "," + name + "," + status + "," + description + "," + epicId + ",";
     }
 }
