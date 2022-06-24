@@ -144,6 +144,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
                 line = line.substring(0, line.length()-1);
                 fileWriter.write(line);
+            } else {
+                fileWriter.write("null"); //так же можно сделать?)
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при записи файла.");
@@ -202,7 +204,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     fileBackedTasksManager.updateEpicStatus(epic);
                 }
             }
-            if (lines[lines.length - 1].length() > 0) {
+            if (!lines[lines.length - 1].equals("null")) { //line 148: так же можно сделать?)
                 String[] historyIds = lines[lines.length - 1].split(",");
                 for (int j = 0; j < historyIds.length; j++) {
                     int id = Integer.parseInt(historyIds[j]);
@@ -212,7 +214,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
             }
         } else {
-            System.out.println("Ощибка. Файл пуст.");
+            System.out.println("Ошибка. Файл пуст.");
         }
         return fileBackedTasksManager;
     }
@@ -265,11 +267,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println(inMemoryTaskManager.getSubTasks());
 
         System.out.println("Запросы и вывод");
-        System.out.println(inMemoryTaskManager.getTaskById(task1.getId()));
+        /*System.out.println(inMemoryTaskManager.getTaskById(task1.getId()));
         System.out.println(inMemoryTaskManager.getTaskById(task2.getId()));
         System.out.println(inMemoryTaskManager.getEpicById(epic1.getId()));
         System.out.println(inMemoryTaskManager.getTaskById(task1.getId()));
-        System.out.println(inMemoryTaskManager.getHistory());
+        System.out.println(inMemoryTaskManager.getHistory());*/
 
         System.out.println("Удаление эпика и вывод");
         inMemoryTaskManager.removeEpicById(epic1.getId());
