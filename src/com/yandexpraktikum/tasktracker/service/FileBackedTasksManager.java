@@ -177,42 +177,42 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         } catch (IOException e) {
             System.out.println("Ошибка при чтении файла.");
         }
-        String[] lines = content.split("\n");
-        int newId = 0;
-        for (int i=1; i<lines.length-2; i++) {
-            int id = Integer.parseInt(lines[i].substring(0,1));
-            if (id > newId) {
-                newId = id;
-            }
-        }
-        fileBackedTasksManager.counter.setId(newId);
-        for (int i = 1; i < lines.length-2; i++) {
-            Task task = fromString(lines[i]);
-            String[] line = lines[i].split(",");
-            if (line[1].equals("TASK")) {
-                fileBackedTasksManager.tasks.put(task.getId(), task);
-            } else if (line[1].equals("EPIC")) {
-                fileBackedTasksManager.epics.put(task.getId(), (Epic) task);
-            } else if (line[1].equals("SUBTASK")) {
-                fileBackedTasksManager.subTasks.put(task.getId(), (SubTask) task);
-                Epic epic = fileBackedTasksManager.epics.get(((SubTask) task).getEpicId());
-                List<Integer> subTaskIds = epic.getSubTaskIds();
-                subTaskIds.add(task.getId());
-                fileBackedTasksManager.updateEpicStatus(epic);
-            }
-        }
-        if (lines[lines.length-1].length()>0) {
-            String[] historyIds = lines[lines.length-1].split(",");
-            for (int j = 0; j < historyIds.length; j++) {
-                int id = Integer.parseInt(historyIds[j]);
-                if (fileBackedTasksManager.tasks.containsKey(id)) {
-                    fileBackedTasksManager.inMemoryHistoryManager.addTaskToHistory(fileBackedTasksManager.getTaskById(id));
-                } else if (fileBackedTasksManager.epics.containsKey(id)) {
-                    fileBackedTasksManager.inMemoryHistoryManager.addTaskToHistory(fileBackedTasksManager.getEpicById(id));
-                } else if (fileBackedTasksManager.subTasks.containsKey(id)) {
-                    fileBackedTasksManager.inMemoryHistoryManager.addTaskToHistory(fileBackedTasksManager.getSubtaskById(id));
+        if (!content.isEmpty()) {
+            String[] lines = content.split("\n");
+            int newId = 0;
+            for (int i = 1; i < lines.length - 2; i++) {
+                int id = Integer.parseInt(lines[i].substring(0, 1));
+                if (id > newId) {
+                    newId = id;
                 }
             }
+            fileBackedTasksManager.counter.setId(newId);
+            for (int i = 1; i < lines.length - 2; i++) {
+                Task task = fromString(lines[i]);
+                String[] line = lines[i].split(",");
+                if (line[1].equals("TASK")) {
+                    fileBackedTasksManager.tasks.put(task.getId(), task);
+                } else if (line[1].equals("EPIC")) {
+                    fileBackedTasksManager.epics.put(task.getId(), (Epic) task);
+                } else if (line[1].equals("SUBTASK")) {
+                    fileBackedTasksManager.subTasks.put(task.getId(), (SubTask) task);
+                    Epic epic = fileBackedTasksManager.epics.get(((SubTask) task).getEpicId());
+                    List<Integer> subTaskIds = epic.getSubTaskIds();
+                    subTaskIds.add(task.getId());
+                    fileBackedTasksManager.updateEpicStatus(epic);
+                }
+            }
+            if (lines[lines.length - 1].length() > 0) {
+                String[] historyIds = lines[lines.length - 1].split(",");
+                for (int j = 0; j < historyIds.length; j++) {
+                    int id = Integer.parseInt(historyIds[j]);
+                    if (fileBackedTasksManager.getEpicById(id) != null) continue;
+                    if (fileBackedTasksManager.getTaskById(id) != null) continue;
+                    if (fileBackedTasksManager.getSubtaskById(id) != null) continue;
+                }
+            }
+        } else {
+            System.out.println("Ощибка. Файл пуст.");
         }
         return fileBackedTasksManager;
     }

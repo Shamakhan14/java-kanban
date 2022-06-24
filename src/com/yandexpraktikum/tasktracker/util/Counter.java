@@ -9,7 +9,7 @@ public class Counter {
     }
 
     public int getNewId() {
-        id++;
+        ++id;
         return id;
     }
 

@@ -109,7 +109,6 @@ public class InMemoryTaskManager implements TaskManager {
             inMemoryHistoryManager.addTaskToHistory(tasks.get(id));
             return tasks.get(id);
         } else {
-            System.out.println("Такой задачи нет.");
             return null;
         }
     }
@@ -120,7 +119,6 @@ public class InMemoryTaskManager implements TaskManager {
             inMemoryHistoryManager.addTaskToHistory(epics.get(id));
             return epics.get(id);
         } else {
-            System.out.println("Такого эпика нет.");
             return null;
         }
     }
@@ -131,7 +129,6 @@ public class InMemoryTaskManager implements TaskManager {
             inMemoryHistoryManager.addTaskToHistory(subTasks.get(id));
             return subTasks.get(id);
         } else {
-            System.out.println("Такой подзадачи нет.");
             return null;
         }
     }
