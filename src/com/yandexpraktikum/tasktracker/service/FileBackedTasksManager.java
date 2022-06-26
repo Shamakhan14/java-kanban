@@ -144,8 +144,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
                 line = line.substring(0, line.length()-1);
                 fileWriter.write(line);
-            } else {
-                fileWriter.write("null"); //так же можно сделать?)
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при записи файла.");
@@ -181,36 +179,44 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
         if (!content.isEmpty()) {
             String[] lines = content.split("\n");
-            int newId = 0;
-            for (int i = 1; i < lines.length - 2; i++) {
-                int id = Integer.parseInt(lines[i].substring(0, 1));
-                if (id > newId) {
-                    newId = id;
+            if (lines.length >= 2) { //проверка на пустоту заполнения файла
+                int newId = 0;
+                int lineNum; //номер строки, до которой идем в циклах, зависит от наличии истории
+                if (lines[lines.length-2].isBlank()) { //проверка на присутствие истории
+                    lineNum = lines.length-2; //история есть, идем до предпоследней строки
+                } else {
+                    lineNum = lines.length; //истории нет, идем до конца файла
                 }
-            }
-            fileBackedTasksManager.counter.setId(newId);
-            for (int i = 1; i < lines.length - 2; i++) {
-                Task task = fromString(lines[i]);
-                String[] line = lines[i].split(",");
-                if (line[1].equals("TASK")) {
-                    fileBackedTasksManager.tasks.put(task.getId(), task);
-                } else if (line[1].equals("EPIC")) {
-                    fileBackedTasksManager.epics.put(task.getId(), (Epic) task);
-                } else if (line[1].equals("SUBTASK")) {
-                    fileBackedTasksManager.subTasks.put(task.getId(), (SubTask) task);
-                    Epic epic = fileBackedTasksManager.epics.get(((SubTask) task).getEpicId());
-                    List<Integer> subTaskIds = epic.getSubTaskIds();
-                    subTaskIds.add(task.getId());
-                    fileBackedTasksManager.updateEpicStatus(epic);
+                for (int i = 1; i < lineNum; i++) {
+                    int id = Integer.parseInt(lines[i].substring(0, 1));
+                    if (id > newId) {
+                        newId = id;
+                    }
                 }
-            }
-            if (!lines[lines.length - 1].equals("null")) { //line 148: так же можно сделать?)
-                String[] historyIds = lines[lines.length - 1].split(",");
-                for (int j = 0; j < historyIds.length; j++) {
-                    int id = Integer.parseInt(historyIds[j]);
-                    if (fileBackedTasksManager.getEpicById(id) != null) continue;
-                    if (fileBackedTasksManager.getTaskById(id) != null) continue;
-                    if (fileBackedTasksManager.getSubtaskById(id) != null) continue;
+                fileBackedTasksManager.counter.setId(newId);
+                for (int i = 1; i < lineNum; i++) {
+                    Task task = fromString(lines[i]);
+                    String[] line = lines[i].split(",");
+                    if (line[1].equals("TASK")) {
+                        fileBackedTasksManager.tasks.put(task.getId(), task);
+                    } else if (line[1].equals("EPIC")) {
+                        fileBackedTasksManager.epics.put(task.getId(), (Epic) task);
+                    } else if (line[1].equals("SUBTASK")) {
+                        fileBackedTasksManager.subTasks.put(task.getId(), (SubTask) task);
+                        Epic epic = fileBackedTasksManager.epics.get(((SubTask) task).getEpicId());
+                        List<Integer> subTaskIds = epic.getSubTaskIds();
+                        subTaskIds.add(task.getId());
+                        fileBackedTasksManager.updateEpicStatus(epic);
+                    }
+                }
+                if (lines[lines.length - 2].isBlank()) {
+                    String[] historyIds = lines[lines.length - 1].split(",");
+                    for (int j = 0; j < historyIds.length; j++) {
+                        int id = Integer.parseInt(historyIds[j]);
+                        if (fileBackedTasksManager.getEpicById(id) != null) continue;
+                        if (fileBackedTasksManager.getTaskById(id) != null) continue;
+                        if (fileBackedTasksManager.getSubtaskById(id) != null) continue;
+                    }
                 }
             }
         } else {
@@ -267,11 +273,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println(inMemoryTaskManager.getSubTasks());
 
         System.out.println("Запросы и вывод");
-        /*System.out.println(inMemoryTaskManager.getTaskById(task1.getId()));
+        System.out.println(inMemoryTaskManager.getTaskById(task1.getId()));
         System.out.println(inMemoryTaskManager.getTaskById(task2.getId()));
         System.out.println(inMemoryTaskManager.getEpicById(epic1.getId()));
         System.out.println(inMemoryTaskManager.getTaskById(task1.getId()));
-        System.out.println(inMemoryTaskManager.getHistory());*/
+        System.out.println(inMemoryTaskManager.getHistory());
 
         System.out.println("Удаление эпика и вывод");
         inMemoryTaskManager.removeEpicById(epic1.getId());
