@@ -22,7 +22,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     public InMemoryTaskManager() {
         this.tasks = new HashMap<>();
-        this.epics= new HashMap<>();
+        this.epics = new HashMap<>();
         this.subTasks = new HashMap<>();
         this.counter = new Counter();
     }
@@ -176,10 +176,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<SubTask> getSubtasksByEpicId(int id) { //вывод списка подзадач эпика
         List<SubTask> newSubTasks = new ArrayList<>();
-        Epic newEpic = epics.get(id);
-        List<Integer> newSubTaskIds = newEpic.getSubTaskIds();
-        for (Integer newId: newSubTaskIds) {
-            newSubTasks.add(subTasks.get(newId));
+        if (epics.containsKey(id)) {
+            Epic newEpic = epics.get(id);
+            List<Integer> newSubTaskIds = newEpic.getSubTaskIds();
+            for (Integer newId : newSubTaskIds) {
+                newSubTasks.add(subTasks.get(newId));
+            }
         }
         return newSubTasks;
     }
