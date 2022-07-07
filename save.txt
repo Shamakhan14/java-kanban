@@ -1,6 +1,5 @@
-id,type,name,status,description,epic
-1,TASK,Уборка,NEW,Убраться в комнате,
-2,TASK,Посуда,IN_PROGRESS,Помыть посуду,
-7,EPIC,Ужин,IN_PROGRESS,Покушать,
-8,SUBTASK,Приготовить,IN_PROGRESS,Приготовить,7,
+id,type,name,status,description,startTime,duration,epicId
+1,TASK,name,NEW,description,2022-07-08T00:24:24.094801600,15
+2,TASK,name3,NEW,desc3,2022-07-08T01:34:24.149814,20
 
+1
