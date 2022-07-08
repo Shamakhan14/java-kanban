@@ -125,6 +125,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         save();
     }
 
+    @Override
+    protected void updateEpicTime(Epic epic) {
+        super.updateEpicTime(epic);
+        save();
+    }
+
     public void save() {
         try (Writer fileWriter = new FileWriter(file)) {
             fileWriter.write(HEADLINE + "\n");
@@ -150,7 +156,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             throw new ManagerSaveException("Ошибка при записи файла.");
         }
     }
-
 
     public static Task fromString(String value) {
         String[] values = value.split(","); //append=true для проверки
@@ -210,6 +215,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         List<Integer> subTaskIds = epic.getSubTaskIds();
                         subTaskIds.add(task.getId());
                         fileBackedTasksManager.updateEpicStatus(epic);
+                        fileBackedTasksManager.updateEpicTime(epic);
                     }
                 }
                 if (lines[lines.length - 2].isBlank()) {
@@ -257,10 +263,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         //Заполнение и вывод
         Task task1 = new Task("name", "description", "NEW", 15, LocalDateTime.now());
         inMemoryTaskManager.addTask(task1);
-        Task task2 = new Task("name2", "desc2", "NEW", 20, LocalDateTime.now().plusMinutes(1));
-        inMemoryTaskManager.addTask(task2);
-        Task task3 = new Task("name3", "desc3", "NEW", 20, LocalDateTime.now().plusMinutes(70));
-        inMemoryTaskManager.addTask(task3);
+        Epic epic1 = new Epic("name2", "desc2");
+        inMemoryTaskManager.addEpic(epic1);
+        SubTask subTask1 = new SubTask("name3", "desc3", "NEW", 20, LocalDateTime.now().plusMinutes(30), epic1.getId());
+        inMemoryTaskManager.addSubTask(subTask1);
         Task task4 = inMemoryTaskManager.getTaskById(task1.getId());
+        Task task5 = inMemoryTaskManager.getTaskById(task1.getId());
+
+        FileBackedTasksManager taskManager = FileBackedTasksManager.loadFromFile(file);
+        FileBackedTasksManager.print(taskManager);
     }
 }

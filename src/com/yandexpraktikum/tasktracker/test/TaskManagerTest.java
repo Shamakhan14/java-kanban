@@ -7,10 +7,10 @@ import com.yandexpraktikum.tasktracker.service.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 abstract class TaskManagerTest<T extends TaskManager> {
     protected T taskManager;
@@ -134,7 +134,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldReturnTaskOrNull() {
-        assertEquals(null, taskManager.getTaskById(-1));
+        assertNull(taskManager.getTaskById(-1));
         Task task = new Task("name", "description", "NEW");
         taskManager.addTask(task);
         final int taskId = task.getId();
@@ -143,7 +143,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldReturnEpicOrNull() {
-        assertEquals(null, taskManager.getEpicById(-1));
+        assertNull(taskManager.getEpicById(-1));
         Epic epic = new Epic("name", "description");
         taskManager.addEpic(epic);
         final int epicId = epic.getId();
@@ -152,7 +152,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldReturnSubtaskOrNull() {
-        assertEquals(null, taskManager.getSubtaskById(-1));
+        assertNull(taskManager.getSubtaskById(-1));
         Epic epic = new Epic("Epic name", "Epic description");
         taskManager.addEpic(epic);
         SubTask subTask = new SubTask("SubTask name", "SubTask description", "NEW", epic.getId());
@@ -166,7 +166,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.removeTaskById(-1);
         Task task1 = new Task("name1", "description1", "NEW");
         taskManager.addTask(task1);
-        Task task2 = new Task("name2", "description2", "NEW");
+        Task task2 = new Task("name2", "description2", "NEW", 2, LocalDateTime.now().plusMinutes(1));
         taskManager.addTask(task2);
         assertEquals(2, taskManager.getTasks().size());
         taskManager.removeTaskById(task1.getId());
@@ -262,5 +262,32 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(task, taskManager.getHistory().get(0));
         taskManager.clearAllTasks();
         assertEquals(0, taskManager.getHistory().size());
+    }
+
+    @Test
+    public void shouldNotAddTaskIfTimeCollision() {
+        Task task = new Task("name1", "description1", "NEW", 20, LocalDateTime.now());
+        taskManager.addTask(task);
+        //начало норм, конец пересекается
+        Task task1 = new Task("name1", "description1", "NEW", 10,
+                LocalDateTime.now().minusMinutes(2));
+        taskManager.addTask(task1);
+        //пересекаются и начало, и конец
+        Task task2 = new Task("name2", "description2", "NEW", 2,
+                LocalDateTime.now().plusMinutes(2));
+        taskManager.addTask(task2);
+        //пересечается начало
+        Task task3 = new Task("name3", "description3", "NEW", 10,
+                LocalDateTime.now().plusMinutes(19));
+        taskManager.addTask(task3);
+        assertEquals(1, taskManager.getTasks().size());
+        assertEquals(task,taskManager.getTasks().get(0));
+        Task task4 = new Task("name4", "description4", "NEW", 10,
+                LocalDateTime.now().minusMinutes(30));
+        taskManager.addTask(task4);
+        Task task5 = new Task("name5", "description5", "NEW", 10,
+                LocalDateTime.now().plusMinutes(50));
+        taskManager.addTask(task5);
+        assertEquals(3, taskManager.getTasks().size());
     }
 }

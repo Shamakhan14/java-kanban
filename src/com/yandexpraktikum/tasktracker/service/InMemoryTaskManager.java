@@ -212,15 +212,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<SubTask> getSubtasksByEpicId(int id) { //вывод списка подзадач эпика
-        List<SubTask> subTasks = new ArrayList<>();
+        List<SubTask> epicSubTasks = new ArrayList<>();
         if (epics.containsKey(id)) {
             Epic epic = epics.get(id);
             List<Integer> subTaskIds = epic.getSubTaskIds();
             for (Integer newId : subTaskIds) {
-                subTasks.add(subTasks.get(newId));
+                epicSubTasks.add(subTasks.get(newId));
             }
         }
-        return subTasks;
+        return epicSubTasks;
     }
 
     @Override
@@ -228,28 +228,32 @@ public class InMemoryTaskManager implements TaskManager {
         /*сохраняем задачу, удаляем из сорт.списка, чтобы не учитывать в проверке по времени
         проверяем и меняем
         если не проходит по условиям, возвращаем задачу обратно в сорт.список*/
-        Task savedTask = tasks.get(task.getId());
-        sortedSet.remove(savedTask);
-        if (tasks.containsKey(task.getId()) && noTimeCollision(task)) {
-            tasks.put(task.getId(), task);
-            sortedSet.add(task);
-        } else {
-            sortedSet.add(savedTask);
+        if (tasks.containsKey(task.getId())) {
+            Task savedTask = tasks.get(task.getId());
+            sortedSet.remove(savedTask);
+            if (noTimeCollision(task)) {
+                tasks.put(task.getId(), task);
+                sortedSet.add(task);
+            } else {
+                sortedSet.add(savedTask);
+            }
         }
     }
 
     @Override
     public void updateSubTask(SubTask subTask) {
-        SubTask savedSubTask = subTasks.get(subTask.getId());
-        sortedSet.remove(savedSubTask);
-        if (subTasks.containsKey(subTask.getId()) && noTimeCollision(subTask)) {
-            subTasks.put(subTask.getId(), subTask);
-            Epic epic = epics.get(subTask.getEpicId());
-            updateEpicStatus(epic);
-            updateEpicTime(epic);
-            sortedSet.add(subTask);
-        } else {
-            sortedSet.add(savedSubTask);
+        if (subTasks.containsKey(subTask.getId())) {
+            SubTask savedSubTask = subTasks.get(subTask.getId());
+            sortedSet.remove(savedSubTask);
+            if (noTimeCollision(subTask)) {
+                subTasks.put(subTask.getId(), subTask);
+                Epic epic = epics.get(subTask.getEpicId());
+                updateEpicStatus(epic);
+                updateEpicTime(epic);
+                sortedSet.add(subTask);
+            } else {
+                sortedSet.add(savedSubTask);
+            }
         }
     }
 
