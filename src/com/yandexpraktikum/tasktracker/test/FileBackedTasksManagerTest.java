@@ -6,6 +6,8 @@ import com.yandexpraktikum.tasktracker.model.Task;
 import com.yandexpraktikum.tasktracker.service.FileBackedTasksManager;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
 
 public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
@@ -20,18 +22,26 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     @Test
     public void shouldSaveAndLoadEmptyManager() {
         taskManager.save();
-        taskManager = FileBackedTasksManager.loadFromFile(file);
-        FileBackedTasksManager.print(taskManager);
+        FileBackedTasksManager loadedTaskManager = FileBackedTasksManager.loadFromFile(file);
+        assertEquals(taskManager.getTasks(), loadedTaskManager.getTasks());
+        assertEquals(taskManager.getEpics(), loadedTaskManager.getEpics());
+        assertEquals(taskManager.getSubTasks(), loadedTaskManager.getSubTasks());
+        assertEquals(taskManager.getSortedSet(), loadedTaskManager.getSortedSet());
+        assertEquals(taskManager.getHistory(), loadedTaskManager.getHistory());
     }
 
     @Test
     public void shouldSaveAndLoadManagerWithEmptyHistory() {
         Epic epic = new Epic("name", "description");
-        taskManager.addTask(epic);
+        taskManager.addEpic(epic);
         Epic epic1 = taskManager.getEpicById(epic.getId());
         taskManager.save();
-        taskManager = FileBackedTasksManager.loadFromFile(file);
-        FileBackedTasksManager.print(taskManager);
+        FileBackedTasksManager loadedTaskManager = FileBackedTasksManager.loadFromFile(file);
+        assertEquals(taskManager.getTasks(), loadedTaskManager.getTasks());
+        assertEquals(taskManager.getEpics(), loadedTaskManager.getEpics());
+        assertEquals(taskManager.getSubTasks(), loadedTaskManager.getSubTasks());
+        assertEquals(taskManager.getSortedSet(), loadedTaskManager.getSortedSet());
+        assertEquals(taskManager.getHistory(), loadedTaskManager.getHistory());
     }
 
     @Test
@@ -45,7 +55,13 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         Task newTask = taskManager.getTaskById((task.getId()));
         SubTask newSubTask = taskManager.getSubtaskById(subTask.getId());
         taskManager.save();
-        taskManager = FileBackedTasksManager.loadFromFile(file);
-        FileBackedTasksManager.print(taskManager);
+        FileBackedTasksManager loadedTaskManager = FileBackedTasksManager.loadFromFile(file);
+        assertEquals(taskManager.getTasks(), loadedTaskManager.getTasks());
+        assertEquals(taskManager.getEpics(), loadedTaskManager.getEpics());
+        assertEquals(taskManager.getSubTasks(), loadedTaskManager.getSubTasks());
+        assertEquals(taskManager.getSortedSet(), loadedTaskManager.getSortedSet());
+        assertEquals(taskManager.getHistory(), loadedTaskManager.getHistory());
     }
+
+
 }

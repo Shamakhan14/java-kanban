@@ -92,4 +92,31 @@ public class Task {
         return id + "," + getTaskType().name() + "," + name + "," + status + "," + description + "," +
                 getStartTime().toString() + "," + duration.toMinutes();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof Task)) {
+            return false;
+        }
+        Task task = (Task) o;
+        return task.name.equals(name) &&
+                task.description.equals(description) &&
+                task.status == status &&
+                task.id == id &&
+                task.duration.equals(duration) &&
+                task.startTime.equals(startTime);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31  * result + name.hashCode();
+        result = 31  * result + description.hashCode();
+        result = 31  * result + status.hashCode();
+        result = 31  * result + id;
+        result = 31  * result + duration.hashCode();
+        result = 31  * result + startTime.hashCode();
+        return result;
+    }
 }

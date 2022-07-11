@@ -3,6 +3,8 @@ package com.yandexpraktikum.tasktracker.service;
 import com.yandexpraktikum.tasktracker.model.Epic;
 import com.yandexpraktikum.tasktracker.model.SubTask;
 import com.yandexpraktikum.tasktracker.model.Task;
+import com.yandexpraktikum.tasktracker.util.Status;
+import com.yandexpraktikum.tasktracker.util.TaskType;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -157,24 +159,27 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public static Task fromString(String value) {
-        String[] values = value.split(","); //append=true для проверки
-        if (values[1].equals("TASK")) {
-            Task task = new Task(values[2], values[4], values[3], Integer.parseInt(values[6]),
-                    LocalDateTime.parse(values[5]));
-            task.setId(Integer.parseInt(values[0]));
-            return task;
-        } else if (values[1].equals("EPIC")) {
-            Epic epic = new Epic(values[2], values[4]);
-            epic.setId(Integer.parseInt(values[0]));
-            return epic;
-        } else if (values[1].equals("SUBTASK")) {
-            SubTask subTask = new SubTask(values[2], values[4], values[3], Integer.parseInt(values[6]),
-                    LocalDateTime.parse(values[5]), Integer.parseInt(values[7]));
-            subTask.setId(Integer.parseInt(values[0]));
-            return subTask;
+    private static Task fromString(String value) {
+        String[] values = value.split(","); //", append = true" для проверки
+        switch (TaskType.valueOf(values[1])) {
+            case TASK:
+                Task task = new Task(values[2], values[4], values[3], Integer.parseInt(values[6]),
+                        LocalDateTime.parse(values[5]));
+                task.setId(Integer.parseInt(values[0]));
+                return task;
+            case EPIC:
+                Epic epic = new Epic(values[2], values[4], values[3], Integer.parseInt(values[6]),
+                        LocalDateTime.parse(values[5]));
+                epic.setId(Integer.parseInt(values[0]));
+                return epic;
+            case SUBTASK:
+                SubTask subTask = new SubTask(values[2], values[4], values[3], Integer.parseInt(values[6]),
+                        LocalDateTime.parse(values[5]), Integer.parseInt(values[7]));
+                subTask.setId(Integer.parseInt(values[0]));
+                return subTask;
+            default:
+                return null;
         }
-        return null;
     }
 
     public static FileBackedTasksManager loadFromFile(File file) {
@@ -205,17 +210,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 for (int i = 1; i < lineNum; i++) {
                     Task task = fromString(lines[i]);
                     String[] line = lines[i].split(",");
-                    if (line[1].equals("TASK")) {
-                        fileBackedTasksManager.tasks.put(task.getId(), task);
-                    } else if (line[1].equals("EPIC")) {
-                        fileBackedTasksManager.epics.put(task.getId(), (Epic) task);
-                    } else if (line[1].equals("SUBTASK")) {
-                        fileBackedTasksManager.subTasks.put(task.getId(), (SubTask) task);
-                        Epic epic = fileBackedTasksManager.epics.get(((SubTask) task).getEpicId());
-                        List<Integer> subTaskIds = epic.getSubTaskIds();
-                        subTaskIds.add(task.getId());
-                        fileBackedTasksManager.updateEpicStatus(epic);
-                        fileBackedTasksManager.updateEpicTime(epic);
+                    switch (TaskType.valueOf(line[1])) {
+                        case TASK:
+                            fileBackedTasksManager.tasks.put(task.getId(), task);
+                            fileBackedTasksManager.sortedSet.add(task);
+                            break;
+                        case EPIC:
+                            fileBackedTasksManager.epics.put(task.getId(), (Epic) task);
+                            break;
+                        case SUBTASK:
+                            fileBackedTasksManager.subTasks.put(task.getId(), (SubTask) task);
+                            fileBackedTasksManager.sortedSet.add(task);
+                            Epic epic = fileBackedTasksManager.epics.get(((SubTask) task).getEpicId());
+                            List<Integer> subTaskIds = epic.getSubTaskIds();
+                            subTaskIds.add(task.getId());
+                            fileBackedTasksManager.updateEpicStatus(epic);
+                            fileBackedTasksManager.updateEpicTime(epic);
                     }
                 }
                 if (lines[lines.length - 2].isBlank()) {

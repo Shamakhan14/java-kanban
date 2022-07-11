@@ -16,6 +16,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer,Task> tasks;
     protected Map<Integer,Epic> epics;
     protected Map<Integer,SubTask> subTasks;
+
     protected TreeSet<Task> sortedSet;
     protected HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
     protected Counter counter;
@@ -32,10 +33,15 @@ public class InMemoryTaskManager implements TaskManager {
         });
     }
 
+    public TreeSet<Task> getSortedSet() {
+        return sortedSet;
+    }
+
     /*Чтобы не было пересечений во времени, нужно, чтобы и начало, и конец первой задачи были до начала или после
     конца второй задачи. Эпики проверять и добавлять в сет бессмысленно, только таски и сабтаски.*/
     private boolean noTimeCollision(Task task1) {
         if (sortedSet.isEmpty()) return true;
+        if (sortedSet.size() == 1 && sortedSet.first().getId() == task1.getId()) return true;
         for (Task task2: sortedSet) {
             if ((task1.getStartTime().isBefore(task2.getStartTime()) &&
                     task1.getEndTime().isBefore(task2.getStartTime())) ||
@@ -225,35 +231,22 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) {
-        /*сохраняем задачу, удаляем из сорт.списка, чтобы не учитывать в проверке по времени
-        проверяем и меняем
-        если не проходит по условиям, возвращаем задачу обратно в сорт.список*/
-        if (tasks.containsKey(task.getId())) {
-            Task savedTask = tasks.get(task.getId());
-            sortedSet.remove(savedTask);
-            if (noTimeCollision(task)) {
-                tasks.put(task.getId(), task);
-                sortedSet.add(task);
-            } else {
-                sortedSet.add(savedTask);
-            }
+        if (tasks.containsKey(task.getId()) && noTimeCollision(task)) {
+            sortedSet.remove(tasks.get(task.getId()));
+            tasks.put(task.getId(), task);
+            sortedSet.add(task);
         }
     }
 
     @Override
     public void updateSubTask(SubTask subTask) {
-        if (subTasks.containsKey(subTask.getId())) {
-            SubTask savedSubTask = subTasks.get(subTask.getId());
-            sortedSet.remove(savedSubTask);
-            if (noTimeCollision(subTask)) {
-                subTasks.put(subTask.getId(), subTask);
-                Epic epic = epics.get(subTask.getEpicId());
-                updateEpicStatus(epic);
-                updateEpicTime(epic);
-                sortedSet.add(subTask);
-            } else {
-                sortedSet.add(savedSubTask);
-            }
+        if (subTasks.containsKey(subTask.getId()) && noTimeCollision(subTask)) {
+            sortedSet.remove(subTasks.get(subTask.getId()));
+            subTasks.put(subTask.getId(), subTask);
+            Epic epic = epics.get(subTask.getEpicId());
+            updateEpicStatus(epic);
+            updateEpicTime(epic);
+            sortedSet.add(subTask);
         }
     }
 

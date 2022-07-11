@@ -81,19 +81,19 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void shouldBeEmptyTasksList() {
         final List<Task> emptyTasks = taskManager.getTasks();
-        assertEquals(emptyTasks.size(), 0);
+        assertEquals(0, emptyTasks.size());
     }
 
     @Test
     public void shouldBeEmptyEpicsList() {
         final List<Epic> emptyEpics = taskManager.getEpics();
-        assertEquals(emptyEpics.size(), 0);
+        assertEquals(0, emptyEpics.size());
     }
 
     @Test
     public void shouldBeEmptySubTasksList() {
         final List<SubTask> emptySubTasks = taskManager.getSubTasks();
-        assertEquals(emptySubTasks.size(), 0);
+        assertEquals(0, emptySubTasks.size());
     }
 
     @Test

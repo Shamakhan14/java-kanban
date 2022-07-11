@@ -17,6 +17,12 @@ public class Epic extends Task{
         this.endTime = LocalDateTime.now().plusNanos(1);
     }
 
+    public Epic(String name, String description, String status, int duration, LocalDateTime startTime) {
+        super(name, description, "NEW", duration, startTime);
+        this.subTaskIds = new ArrayList<>();
+        this.endTime = LocalDateTime.now().plusNanos(1);
+    }
+
     public List<Integer> getSubTaskIds() {
         return subTaskIds;
     }
@@ -43,5 +49,34 @@ public class Epic extends Task{
 
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof Task)) {
+            return false;
+        }
+        Epic epic = (Epic) o;
+        return epic.name.equals(name) &&
+                epic.description.equals(description) &&
+                epic.status == status &&
+                epic.id == id &&
+                epic.duration.equals(duration) &&
+                epic.startTime.equals(startTime) &&
+                epic.subTaskIds.equals(subTaskIds);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31  * result + name.hashCode();
+        result = 31  * result + description.hashCode();
+        result = 31  * result + status.hashCode();
+        result = 31  * result + id;
+        result = 31  * result + duration.hashCode();
+        result = 31  * result + startTime.hashCode();
+        result = 31 * result + subTaskIds.hashCode();
+        return result;
     }
 }
