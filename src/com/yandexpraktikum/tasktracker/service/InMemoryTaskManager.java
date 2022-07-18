@@ -37,12 +37,13 @@ public class InMemoryTaskManager implements TaskManager {
         return sortedSet;
     }
 
-    /*Чтобы не было пересечений во времени, нужно, чтобы и начало, и конец первой задачи были до начала или после
-    конца второй задачи. Эпики проверять и добавлять в сет бессмысленно, только таски и сабтаски.*/
     private boolean noTimeCollision(Task task1) {
         if (sortedSet.isEmpty()) return true;
         if (sortedSet.size() == 1 && sortedSet.first().getId() == task1.getId()) return true;
         for (Task task2: sortedSet) {
+            if (task1.getId() == task2.getId()) {
+                continue;
+            }
             if ((task1.getStartTime().isBefore(task2.getStartTime()) &&
                     task1.getEndTime().isBefore(task2.getStartTime())) ||
                     (task1.getStartTime().isAfter(task2.getEndTime()) &&

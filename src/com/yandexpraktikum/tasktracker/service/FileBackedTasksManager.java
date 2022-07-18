@@ -147,12 +147,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
             fileWriter.write("\n");
             if (!getHistory().isEmpty()) {
-                String line = "";
+                StringBuilder line = new StringBuilder();
                 for (Task task: getHistory()) {
-                    line = line + task.getId() + ",";
+                    line.append(task.getId() + ",");
                 }
-                line = line.substring(0, line.length()-1);
-                fileWriter.write(line);
+                line.deleteCharAt(line.length()-1);
+                fileWriter.write(line.toString());
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при записи файла.");
