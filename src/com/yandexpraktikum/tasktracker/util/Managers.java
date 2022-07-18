@@ -1,9 +1,8 @@
 package com.yandexpraktikum.tasktracker.util;
 
-import com.yandexpraktikum.tasktracker.service.HistoryManager;
-import com.yandexpraktikum.tasktracker.service.InMemoryHistoryManager;
-import com.yandexpraktikum.tasktracker.service.InMemoryTaskManager;
-import com.yandexpraktikum.tasktracker.service.TaskManager;
+import com.yandexpraktikum.tasktracker.service.*;
+
+import java.io.File;
 
 public class Managers {
 
@@ -15,5 +14,9 @@ public class Managers {
 
     public static HistoryManager getDefaultHistory() {
         return new InMemoryHistoryManager();
+    }
+
+    public static TaskManager getFileBackedTaskManager() {
+        return new FileBackedTasksManager(new File("save.txt"));
     }
 }

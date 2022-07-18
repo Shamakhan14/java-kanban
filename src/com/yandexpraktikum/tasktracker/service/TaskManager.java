@@ -3,6 +3,7 @@ package com.yandexpraktikum.tasktracker.service;
 import com.yandexpraktikum.tasktracker.model.*;
 
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
 
@@ -33,4 +34,6 @@ public interface TaskManager {
     void updateEpic(Epic epic);
 
     List<Task> getHistory();
+
+    public TreeSet<Task> getSortedSet();
 }
