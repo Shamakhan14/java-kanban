@@ -3,31 +3,33 @@ package com.yandexpraktikum.tasktracker.test;
 import com.yandexpraktikum.tasktracker.model.Epic;
 import com.yandexpraktikum.tasktracker.model.SubTask;
 import com.yandexpraktikum.tasktracker.model.Task;
-import com.yandexpraktikum.tasktracker.service.FileBackedTasksManager;
-import org.junit.jupiter.api.Test;
+import com.yandexpraktikum.tasktracker.service.HTTPTaskManager;
+import com.yandexpraktikum.tasktracker.service.KVServer;
+import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.IOException;
 
-import java.io.File;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
+public class HTTPTaskManagerTest{
+    private static final String URL = "http://localhost:8078/";
+    private KVServer kvServer;
+    private HTTPTaskManager taskManager;
 
-    private final String filename = "saveTest.txt";
-
-    @Override
-    public FileBackedTasksManager createTaskManager() {
-        return new FileBackedTasksManager(filename);
+    @BeforeEach
+    public void beforeEach() {
+        try {
+            kvServer = new KVServer();
+            kvServer.start();
+            taskManager = new HTTPTaskManager(URL);
+        } catch (IOException ioException) {
+            System.out.println("Server start failed.");
+        }
     }
 
-    @Test
-    public void shouldSaveAndLoadEmptyManager() {
-        taskManager.save();
-        FileBackedTasksManager loadedTaskManager = FileBackedTasksManager.loadFromFile(filename);
-        assertEquals(taskManager.getTasks(), loadedTaskManager.getTasks());
-        assertEquals(taskManager.getEpics(), loadedTaskManager.getEpics());
-        assertEquals(taskManager.getSubTasks(), loadedTaskManager.getSubTasks());
-        assertEquals(taskManager.getSortedSet(), loadedTaskManager.getSortedSet());
-        assertEquals(taskManager.getHistory(), loadedTaskManager.getHistory());
+    @AfterEach
+    private void afterEach() {
+        kvServer.stop();
     }
 
     @Test
@@ -35,8 +37,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         Epic epic = new Epic("name", "description");
         taskManager.addEpic(epic);
         Epic epic1 = taskManager.getEpicById(epic.getId());
-        taskManager.save();
-        FileBackedTasksManager loadedTaskManager = FileBackedTasksManager.loadFromFile(filename);
+        HTTPTaskManager loadedTaskManager = HTTPTaskManager.load(URL, kvServer.getApiToken());
         assertEquals(taskManager.getTasks(), loadedTaskManager.getTasks());
         assertEquals(taskManager.getEpics(), loadedTaskManager.getEpics());
         assertEquals(taskManager.getSubTasks(), loadedTaskManager.getSubTasks());
@@ -54,8 +55,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         taskManager.addSubTask(subTask);
         Task newTask = taskManager.getTaskById((task.getId()));
         SubTask newSubTask = taskManager.getSubtaskById(subTask.getId());
-        taskManager.save();
-        FileBackedTasksManager loadedTaskManager = FileBackedTasksManager.loadFromFile(filename);
+        HTTPTaskManager loadedTaskManager = HTTPTaskManager.load(URL, kvServer.getApiToken());
         assertEquals(taskManager.getTasks(), loadedTaskManager.getTasks());
         assertEquals(taskManager.getEpics(), loadedTaskManager.getEpics());
         assertEquals(taskManager.getSubTasks(), loadedTaskManager.getSubTasks());

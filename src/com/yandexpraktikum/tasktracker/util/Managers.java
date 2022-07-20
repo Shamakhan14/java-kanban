@@ -8,8 +8,8 @@ public class Managers {
 
     private Managers() {}
 
-    public static TaskManager getDefault() {
-        return new InMemoryTaskManager();
+    public static TaskManager getDefault(String url) {
+        return new HTTPTaskManager(url);
     }
 
     public static HistoryManager getDefaultHistory() {
@@ -17,6 +17,6 @@ public class Managers {
     }
 
     public static TaskManager getFileBackedTaskManager() {
-        return new FileBackedTasksManager(new File("save.txt"));
+        return new FileBackedTasksManager("save.txt");
     }
 }

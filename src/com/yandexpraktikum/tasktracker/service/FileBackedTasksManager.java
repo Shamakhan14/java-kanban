@@ -20,12 +20,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private final File file;
+    private final String filename;
     private static final String HEADLINE = "id,type,name,status,description,startTime,duration,epicId";
 
-    public FileBackedTasksManager(File file) {
+    public FileBackedTasksManager(String filename) {
         super();
-        this.file = file;
+        this.filename = filename;
     }
 
     @Override
@@ -134,7 +134,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public void save() {
-        try (Writer fileWriter = new FileWriter(file)) {
+        try (Writer fileWriter = new FileWriter(new File(filename))) {
             fileWriter.write(HEADLINE + "\n");
             for (Task task: tasks.values()) {
                 fileWriter.write(task.toString() + "\n");
@@ -159,7 +159,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private static Task fromString(String value) {
+    public static Task fromString(String value) {
         String[] values = value.split(","); //", append = true" для проверки
         switch (TaskType.valueOf(values[1])) {
             case TASK:
@@ -182,8 +182,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public static FileBackedTasksManager loadFromFile(File file) {
-        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
+    public static FileBackedTasksManager loadFromFile(String filename) {
+        File file = new File(filename);
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(filename);
         String content = "";
         try {
             content = Files.readString(Path.of(file.getPath()));
@@ -266,9 +267,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public static void main(String[] args) {
-
-        File file = new File("save.txt");
-        TaskManager inMemoryTaskManager = new FileBackedTasksManager(file);
+        TaskManager inMemoryTaskManager = new FileBackedTasksManager("save.txt");
 
         //Заполнение и вывод
         Task task1 = new Task("name", "description", "NEW", 15, LocalDateTime.now());
@@ -280,7 +279,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Task task4 = inMemoryTaskManager.getTaskById(task1.getId());
         Task task5 = inMemoryTaskManager.getTaskById(task1.getId());
 
-        FileBackedTasksManager taskManager = FileBackedTasksManager.loadFromFile(file);
+        FileBackedTasksManager taskManager = FileBackedTasksManager.loadFromFile("save.txt");
         FileBackedTasksManager.print(taskManager);
     }
 }

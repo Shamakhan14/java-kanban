@@ -38,7 +38,7 @@ public class HttpTaskServer {
         public void handle(HttpExchange httpExchange) throws IOException {
             String path = httpExchange.getRequestURI().getPath();
             String method = httpExchange.getRequestMethod();
-            if (path.equals("/tasks")) {
+            if (path.equals("/tasks/")) {
                 httpExchange.sendResponseHeaders( 200, 0);
                 try (OutputStream outputStream = httpExchange.getResponseBody()) {
                     outputStream.write(gson.toJson(fileBackedTasksManager.getSortedSet()).getBytes());
@@ -62,7 +62,7 @@ public class HttpTaskServer {
                     httpExchange.sendResponseHeaders(201, 0);
                     break;
                 case "GET":
-                    if (path.endsWith("/task")) {
+                    if (path.endsWith("/task/")) {
                         httpExchange.sendResponseHeaders(200, 0);
                         try (OutputStream outputStream = httpExchange.getResponseBody()) {
                             outputStream.write(gson.toJson(fileBackedTasksManager.getTasks()).getBytes());
@@ -77,7 +77,7 @@ public class HttpTaskServer {
                     }
                     break;
                 case "DELETE":
-                    if (path.endsWith("/task")) {
+                    if (path.endsWith("/task/")) {
                         httpExchange.sendResponseHeaders(200, 0);
                         fileBackedTasksManager.clearAllTasks();
                     }
@@ -117,7 +117,7 @@ public class HttpTaskServer {
                     httpExchange.sendResponseHeaders(201, 0);
                     break;
                 case "GET":
-                    if (path.endsWith("/epic")) {
+                    if (path.endsWith("/epic/")) {
                         httpExchange.sendResponseHeaders(200, 0);
                         try (OutputStream outputStream = httpExchange.getResponseBody()) {
                             outputStream.write(gson.toJson(fileBackedTasksManager.getEpics()).getBytes());
@@ -132,7 +132,7 @@ public class HttpTaskServer {
                     }
                     break;
                 case "DELETE":
-                    if (path.endsWith("/epic")) {
+                    if (path.endsWith("/epic/")) {
                         httpExchange.sendResponseHeaders(200, 0);
                         fileBackedTasksManager.clearAllEpics();
                     }
@@ -179,7 +179,7 @@ public class HttpTaskServer {
                     httpExchange.sendResponseHeaders(201, 0);
                     break;
                 case "GET":
-                    if (path.endsWith("/subtask")) {
+                    if (path.endsWith("/subtask/")) {
                         httpExchange.sendResponseHeaders(200, 0);
                         try (OutputStream outputStream = httpExchange.getResponseBody()) {
                             outputStream.write(gson.toJson(fileBackedTasksManager.getSubTasks()).getBytes());
@@ -193,7 +193,7 @@ public class HttpTaskServer {
                         }
                     }
                 case "DELETE":
-                    if (path.endsWith("/subtask")) {
+                    if (path.endsWith("/subtask/")) {
                         httpExchange.sendResponseHeaders(200, 0);
                         fileBackedTasksManager.clearAllSubtasks();
                     }
@@ -225,6 +225,10 @@ public class HttpTaskServer {
             Gson gson1 = new Gson();
             Task task = new Task("N", "D", "NEW");
             System.out.println(gson1.toJson(task));
+            Epic epic = new Epic("N2", "D2");
+            System.out.println(gson1.toJson(epic));
+            SubTask subTask = new SubTask("N3", "D3", "IN_PROGRESS", 2);
+            System.out.println(gson1.toJson(subTask));
         } catch(Exception e) {
             System.out.println("Exc.");
         }
