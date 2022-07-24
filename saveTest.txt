@@ -1,0 +1,6 @@
+id,type,name,status,description,startTime,duration,epicId
+1,TASK,Task name,NEW,Task description,2022-07-24T23:06:50.905785400,0
+2,EPIC,Epic name,NEW,Epic description,2022-07-24T23:06:50.907785600,0
+3,SUBTASK,Subtask name,NEW,Subtask description,2022-07-24T23:06:50.907785600,0,2
+
+1,3
