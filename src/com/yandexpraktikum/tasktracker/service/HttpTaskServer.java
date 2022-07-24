@@ -7,7 +7,6 @@ import com.sun.net.httpserver.HttpServer;
 import com.yandexpraktikum.tasktracker.model.Epic;
 import com.yandexpraktikum.tasktracker.model.SubTask;
 import com.yandexpraktikum.tasktracker.model.Task;
-import com.yandexpraktikum.tasktracker.util.Managers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +14,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class HttpTaskServer {
     public static final int PORT = 8080;
@@ -24,7 +24,7 @@ public class HttpTaskServer {
     private static TaskManager fileBackedTasksManager;
 
     public HttpTaskServer() throws IOException {
-        fileBackedTasksManager = Managers.getFileBackedTaskManager();
+        fileBackedTasksManager = new FileBackedTasksManager("save.txt");
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/tasks", new TaskHandler());
         server.createContext("/tasks/epic", new EpicHandler());
@@ -154,13 +154,6 @@ public class HttpTaskServer {
         public void handle(HttpExchange httpExchange) throws IOException {
             String path = httpExchange.getRequestURI().getPath();
             String method = httpExchange.getRequestMethod();
-            if (path.contains("epic")) {
-                int id = Integer.parseInt(path.split("=")[1]);
-                httpExchange.sendResponseHeaders(200, 0);
-                try (OutputStream outputStream = httpExchange.getResponseBody()) {
-                    outputStream.write(gson.toJson(fileBackedTasksManager.getSubtasksByEpicId(id)).getBytes());
-                }
-            }
             switch (method) {
                 case "POST":
                     InputStream inputStream = httpExchange.getRequestBody();
@@ -179,19 +172,27 @@ public class HttpTaskServer {
                     httpExchange.sendResponseHeaders(201, 0);
                     break;
                 case "GET":
+                    if (path.contains("epic")) {
+                        int id = Integer.parseInt(path.split("=")[1]);
+                        httpExchange.sendResponseHeaders(200, 0);
+                        try (OutputStream outputStream = httpExchange.getResponseBody()) {
+                            outputStream.write(gson.toJson(fileBackedTasksManager.getSubtasksByEpicId(id)).getBytes());
+                        }
+                    }
                     if (path.endsWith("/subtask/")) {
                         httpExchange.sendResponseHeaders(200, 0);
                         try (OutputStream outputStream = httpExchange.getResponseBody()) {
                             outputStream.write(gson.toJson(fileBackedTasksManager.getSubTasks()).getBytes());
                         }
                     }
-                    if (path.contains("/?id=")) {
+                    if (path.contains("/?id=") && !path.contains("epic")) {
                         int id = Integer.parseInt(path.split("=")[1]);
                         httpExchange.sendResponseHeaders(200, 0);
                         try (OutputStream outputStream = httpExchange.getResponseBody()) {
                             outputStream.write(gson.toJson(fileBackedTasksManager.getSubtaskById(id)).getBytes());
                         }
                     }
+                    break;
                 case "DELETE":
                     if (path.endsWith("/subtask/")) {
                         httpExchange.sendResponseHeaders(200, 0);
@@ -202,6 +203,7 @@ public class HttpTaskServer {
                         httpExchange.sendResponseHeaders(200, 0);
                         fileBackedTasksManager.removeSubtaskById(id);
                     }
+                    break;
                 default:
                     httpExchange.sendResponseHeaders(404, 0);
             }
@@ -219,6 +221,10 @@ public class HttpTaskServer {
         }
     }
 
+    public void stop() {
+        server.stop(0);
+    }
+
     public static void main(String[] args) {
         try {
             HttpTaskServer server1 = new HttpTaskServer();
@@ -227,8 +233,17 @@ public class HttpTaskServer {
             System.out.println(gson1.toJson(task));
             Epic epic = new Epic("N2", "D2");
             System.out.println(gson1.toJson(epic));
-            SubTask subTask = new SubTask("N3", "D3", "IN_PROGRESS", 2);
+            SubTask subTask = new SubTask("N3", "D3", "NEW", 2);
             System.out.println(gson1.toJson(subTask));
+            SubTask subTask1 = new SubTask("N4", "D4", "NEW", 2);
+            FileBackedTasksManager manager = new FileBackedTasksManager("save.txt");
+            manager.addTask(task);
+            manager.addEpic(epic);
+            manager.addSubTask(subTask);
+            manager.addSubTask(subTask1);
+            System.out.println(manager.getSubtasksByEpicId(2));
+            System.out.println(gson1.toJson(manager.getSubtasksByEpicId(2)).getBytes());
+            //server1.stop();
         } catch(Exception e) {
             System.out.println("Exc.");
         }

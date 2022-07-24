@@ -8,8 +8,8 @@ public class Managers {
 
     private Managers() {}
 
-    public static TaskManager getDefault(String url) {
-        return new HTTPTaskManager(url);
+    public static TaskManager getDefault() {
+        return new HTTPTaskManager("http://localhost:8078/");
     }
 
     public static HistoryManager getDefaultHistory() {

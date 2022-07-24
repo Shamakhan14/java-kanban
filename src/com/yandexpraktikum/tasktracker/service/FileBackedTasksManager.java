@@ -3,7 +3,6 @@ package com.yandexpraktikum.tasktracker.service;
 import com.yandexpraktikum.tasktracker.model.Epic;
 import com.yandexpraktikum.tasktracker.model.SubTask;
 import com.yandexpraktikum.tasktracker.model.Task;
-import com.yandexpraktikum.tasktracker.util.Status;
 import com.yandexpraktikum.tasktracker.util.TaskType;
 
 import java.io.*;
@@ -279,7 +278,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Task task4 = inMemoryTaskManager.getTaskById(task1.getId());
         Task task5 = inMemoryTaskManager.getTaskById(task1.getId());
 
-        FileBackedTasksManager taskManager = FileBackedTasksManager.loadFromFile("save.txt");
-        FileBackedTasksManager.print(taskManager);
+        inMemoryTaskManager.clearAllSubtasks();
     }
 }
