@@ -28,6 +28,7 @@ public class HTTPTaskServerTest {
     private void beforeEach() {
         try {
             server = new HttpTaskServer();
+            server.start();
         } catch (IOException exception) {
             System.out.println("Ошибка создания сервера.");
         }

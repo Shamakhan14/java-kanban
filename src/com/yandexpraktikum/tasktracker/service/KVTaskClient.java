@@ -7,6 +7,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class KVTaskClient {
+
+    private static class ServerErrorException extends RuntimeException {
+        public ServerErrorException(String message) {
+            super(message);
+        }
+    }
     private final String url;
 
     private final String token;
@@ -16,11 +22,7 @@ public class KVTaskClient {
         token = register(url);
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public String register(String url) {
+    private String register(String url) {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
@@ -28,9 +30,12 @@ public class KVTaskClient {
                     .GET()
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new ServerErrorException("Операция регистрации не удалась.");
+            }
             return response.body();
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Операция регистрации не удалась.", e);
+            throw new ServerErrorException("Операция регистрации не удалась.");
         }
     }
 
@@ -38,12 +43,15 @@ public class KVTaskClient {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url + "save/key?API_TOKEN=" + key))
+                    .uri(URI.create(url + "save/" + key + "?API_TOKEN=" + token))
                     .POST(HttpRequest.BodyPublishers.ofString(value))
                     .build();
             HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
+            if (response.statusCode() != 200) {
+                throw new ServerErrorException("Операция сохранения не удалась.");
+            }
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Операция сохранения не удалась.", e);
+            throw new ServerErrorException("Операция сохранения не удалась.");
         }
     }
 
@@ -51,13 +59,16 @@ public class KVTaskClient {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url + "load/key?API_TOKEN=" + key))
+                    .uri(URI.create(url + "load/" + key + "?API_TOKEN=" + token))
                     .GET()
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new ServerErrorException("Операция сохранения не удалась.");
+            }
             return response.body();
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Операция загрузки из сервера не удалась.", e);
+            throw new ServerErrorException("Операция сохранения не удалась.");
         }
     }
 }
