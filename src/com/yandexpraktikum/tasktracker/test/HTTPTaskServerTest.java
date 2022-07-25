@@ -5,6 +5,7 @@ import com.yandexpraktikum.tasktracker.model.Epic;
 import com.yandexpraktikum.tasktracker.model.SubTask;
 import com.yandexpraktikum.tasktracker.model.Task;
 import com.yandexpraktikum.tasktracker.service.HttpTaskServer;
+import com.yandexpraktikum.tasktracker.service.KVServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class HTTPTaskServerTest {
 
     private HttpTaskServer server;
-
+    private KVServer kvServer;
     private static final String ADDRESS = "http://localhost:8080/";
 
     @BeforeEach
     private void beforeEach() {
         try {
+            kvServer = new KVServer();
+            kvServer.start();
             server = new HttpTaskServer();
             server.start();
         } catch (IOException exception) {
@@ -37,6 +40,7 @@ public class HTTPTaskServerTest {
     @AfterEach
     private void afterEach() {
         server.stop();
+        kvServer.stop();
     }
 
     @Test

@@ -13,7 +13,7 @@ public class Main {
         try {
             KVServer kvServer = new KVServer();
             kvServer.start();
-            HTTPTaskManager httpTaskManager = new HTTPTaskManager("http://localhost:8078/", false);
+            HTTPTaskManager httpTaskManager = new HTTPTaskManager("http://localhost:8078/");
             Task task = new Task("N", "D", "NEW");
             httpTaskManager.addTask(task);
             List<Task> list = httpTaskManager.getTasks();

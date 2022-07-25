@@ -31,7 +31,6 @@ public class HttpTaskServer {
         server.createContext("/tasks/epic", new EpicHandler());
         server.createContext("/tasks/subtask", new SubTaskHandler());
         server.createContext("/tasks/history", new HistoryHandler());
-        server.start();
     }
 
     public HttpTaskServer(TaskManager manager) throws IOException {
@@ -239,12 +238,15 @@ public class HttpTaskServer {
     }
 
     public void start() {
-        server.stop(0);
+        server.start();
     }
 
     public static void main(String[] args) {
         try {
+            KVServer kvServer = new KVServer();
+            kvServer.start();
             HttpTaskServer server1 = new HttpTaskServer();
+            server1.start();
             Gson gson1 = new Gson();
             Task task = new Task("N", "D", "NEW");
             System.out.println(gson1.toJson(task));
@@ -253,14 +255,8 @@ public class HttpTaskServer {
             SubTask subTask = new SubTask("N3", "D3", "NEW", 2);
             System.out.println(gson1.toJson(subTask));
             SubTask subTask1 = new SubTask("N4", "D4", "NEW", 2);
-            FileBackedTasksManager manager = new FileBackedTasksManager("save.txt");
-            manager.addTask(task);
-            manager.addEpic(epic);
-            manager.addSubTask(subTask);
-            manager.addSubTask(subTask1);
-            System.out.println(manager.getSubtasksByEpicId(2));
-            System.out.println(Arrays.toString(gson1.toJson(manager.getSubtasksByEpicId(2)).getBytes()));
-            server1.stop();
+            System.out.println(gson1.toJson(subTask1));
+            //server1.stop();
         } catch(Exception e) {
             System.out.println("Exc.");
         }

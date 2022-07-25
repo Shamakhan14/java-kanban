@@ -21,7 +21,7 @@ public class HTTPTaskManagerTest{
         try {
             kvServer = new KVServer();
             kvServer.start();
-            taskManager = new HTTPTaskManager(URL, false);
+            taskManager = new HTTPTaskManager(URL);
         } catch (IOException ioException) {
             System.out.println("Server start failed.");
         }
@@ -37,7 +37,7 @@ public class HTTPTaskManagerTest{
         Epic epic = new Epic("name", "description");
         taskManager.addEpic(epic);
         Epic epic1 = taskManager.getEpicById(epic.getId());
-        HTTPTaskManager loadedTaskManager = new HTTPTaskManager(URL, true);
+        HTTPTaskManager loadedTaskManager = new HTTPTaskManager(taskManager);
         assertEquals(taskManager.getTasks(), loadedTaskManager.getTasks());
         assertEquals(taskManager.getEpics(), loadedTaskManager.getEpics());
         assertEquals(taskManager.getSubTasks(), loadedTaskManager.getSubTasks());
@@ -55,7 +55,7 @@ public class HTTPTaskManagerTest{
         taskManager.addSubTask(subTask);
         Task newTask = taskManager.getTaskById((task.getId()));
         SubTask newSubTask = taskManager.getSubtaskById(subTask.getId());
-        HTTPTaskManager loadedTaskManager = new HTTPTaskManager(URL, true);
+        HTTPTaskManager loadedTaskManager = new HTTPTaskManager(taskManager);
         assertEquals(taskManager.getTasks(), loadedTaskManager.getTasks());
         assertEquals(taskManager.getEpics(), loadedTaskManager.getEpics());
         assertEquals(taskManager.getSubTasks(), loadedTaskManager.getSubTasks());
