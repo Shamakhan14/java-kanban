@@ -15,16 +15,16 @@ public class HTTPTaskManager extends FileBackedTasksManager {
     private Gson gson;
 
     public HTTPTaskManager(String url) {
-        super("save.txt");
-        client = new KVTaskClient(url);
-        gson = new Gson();
+        this(url, false);
     }
 
-    public HTTPTaskManager(HTTPTaskManager manager) {
-        super("save.txt");
-        this.client = manager.client;
+    public HTTPTaskManager(String url, boolean load) {
+        super(null);
+        client = new KVTaskClient(url);
         gson = new Gson();
-        load();
+        if (load) {
+            load();
+        }
     }
 
     @Override

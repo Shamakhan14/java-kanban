@@ -25,12 +25,7 @@ public class HttpTaskServer {
     private TaskManager manager;
 
     public HttpTaskServer() throws IOException {
-        manager = Managers.getDefault();
-        server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
-        server.createContext("/tasks", new TaskHandler());
-        server.createContext("/tasks/epic", new EpicHandler());
-        server.createContext("/tasks/subtask", new SubTaskHandler());
-        server.createContext("/tasks/history", new HistoryHandler());
+        this(Managers.getDefault());
     }
 
     public HttpTaskServer(TaskManager manager) throws IOException {
@@ -42,7 +37,7 @@ public class HttpTaskServer {
         server.createContext("/tasks/history", new HistoryHandler());
     }
 
-    class TaskHandler implements HttpHandler {
+    private class TaskHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange httpExchange) {
             try {
@@ -73,6 +68,10 @@ public class HttpTaskServer {
                         }
                         if (path.contains("/?id=")) {
                             int id = Integer.parseInt(path.split("=")[1]);
+                            if (manager.getTaskById(id) == null) {
+                                httpExchange.sendResponseHeaders(404, 0);
+                                break;
+                            }
                             sendText(httpExchange, gson.toJson(manager.getTaskById(id)));
                         }
                         break;
@@ -88,7 +87,7 @@ public class HttpTaskServer {
                         }
                         break;
                     default:
-                        httpExchange.sendResponseHeaders(404, 0);
+                        httpExchange.sendResponseHeaders(405, 0);
                 }
             } catch (IOException ioException) {
                 System.out.println("Ошибка сервера.\n" + ioException.getMessage());
@@ -98,7 +97,7 @@ public class HttpTaskServer {
         }
     }
 
-    class EpicHandler implements HttpHandler {
+    private class EpicHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange httpExchange) {
             String path = httpExchange.getRequestURI().getPath();
@@ -126,6 +125,10 @@ public class HttpTaskServer {
                         }
                         if (path.contains("/?id=")) {
                             int id = Integer.parseInt(path.split("=")[1]);
+                            if (manager.getEpicById(id) == null) {
+                                httpExchange.sendResponseHeaders(404, 0);
+                                break;
+                            }
                             sendText(httpExchange, gson.toJson(manager.getEpicById(id)));
                         }
                         break;
@@ -141,7 +144,7 @@ public class HttpTaskServer {
                         }
                         break;
                     default:
-                        httpExchange.sendResponseHeaders(404, 0);
+                        httpExchange.sendResponseHeaders(405, 0);
                 }
             } catch (IOException ioException) {
                 System.out.println("Ошибка сервера.\n" + ioException.getMessage());
@@ -151,7 +154,7 @@ public class HttpTaskServer {
         }
     }
 
-    class SubTaskHandler implements HttpHandler {
+    private class SubTaskHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange httpExchange) {
             try {
@@ -176,6 +179,10 @@ public class HttpTaskServer {
                     case "GET":
                         if (path.contains("epic")) {
                             int id = Integer.parseInt(path.split("=")[1]);
+                            if (manager.getEpicById(id) == null) {
+                                httpExchange.sendResponseHeaders(404, 0);
+                                break;
+                            }
                             sendText(httpExchange, gson.toJson(manager.getSubtasksByEpicId(id)));
                         }
                         if (path.endsWith("/subtask/")) {
@@ -183,6 +190,10 @@ public class HttpTaskServer {
                         }
                         if (path.contains("/?id=") && !path.contains("epic")) {
                             int id = Integer.parseInt(path.split("=")[1]);
+                            if (manager.getSubtaskById(id) == null) {
+                                httpExchange.sendResponseHeaders(404, 0);
+                                break;
+                            }
                             sendText(httpExchange, gson.toJson(manager.getSubtaskById(id)));
                         }
                         break;
@@ -198,7 +209,7 @@ public class HttpTaskServer {
                         }
                         break;
                     default:
-                        httpExchange.sendResponseHeaders(404, 0);
+                        httpExchange.sendResponseHeaders(405, 0);
                 }
                 httpExchange.close();
             } catch (IOException ioException) {
@@ -209,11 +220,15 @@ public class HttpTaskServer {
         }
     }
 
-    class HistoryHandler implements HttpHandler {
+    private class HistoryHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange httpExchange) {
             try {
-                sendText(httpExchange, gson.toJson(manager.getHistory()));
+                if (!httpExchange.getRequestMethod().equals("GET")) {
+                    httpExchange.sendResponseHeaders(405, 0);
+                } else {
+                    sendText(httpExchange, gson.toJson(manager.getHistory()));
+                }
             } catch (IOException ioException) {
                 System.out.println("Ошибка сервера.\n" + ioException.getMessage());
             } finally {
@@ -226,7 +241,7 @@ public class HttpTaskServer {
         return new String(h.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
     }
 
-    protected void sendText(HttpExchange h, String text) throws IOException {
+    private void sendText(HttpExchange h, String text) throws IOException {
         byte[] resp = text.getBytes(UTF_8);
         h.getResponseHeaders().add("Content-Type", "application/json");
         h.sendResponseHeaders(200, resp.length);
